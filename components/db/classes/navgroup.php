@@ -1,7 +1,7 @@
 <?php
 /*
- * Portal Content Management System
- * Copyright (C) 2011  Hendrik Weiler
+ * Portal Content Management System Version 2
+ * Copyright (C) 2013  Hendrik Weiler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  *
  * @author     Hendrik Weiler
  * @license    http://www.gnu.org/licenses/gpl.html
- * @copyright  2011 Hendrik Weiler
+ * @copyright  2013 Hendrik Weiler
  */
 
 namespace db;
