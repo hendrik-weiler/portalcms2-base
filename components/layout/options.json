@@ -1,0 +1,11 @@
+{
+	"label" : {
+		"default" : "Layout",
+		"de" : "Layout",
+		"en" : "Layout"
+	},
+	"nav_url" : "administration",
+	"nav_visible" : true,
+	"type" : "form",
+	"has_index" : false
+}
