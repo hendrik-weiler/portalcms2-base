@@ -1,124 +1,101 @@
-=gradient($from, $to)
-	background: $from
-	background: -webkit-gradient(linear, 0 0, 0 bottom, from($from), to($to))
-	background: -webkit-linear-gradient($from, $to)
-	background: -moz-linear-gradient($from, $to)
-	background: -ms-linear-gradient($from, $to)
-	background: -o-linear-gradient($from, $to)
-	background: linear-gradient($from, $to)
-	-pie-background: linear-gradient($from, $to)
-	behavior: url(PIEPATH)
-
-
-
 body
-	background: #fff
-	padding-top:5px
+	margin: auto
+	font-family: Arial;
 
-.container
-	width:1200px
+	.navigation
+		ul
+			margin: 0
+			padding: 0
+		li
+			list-style: none
+		a
+			background: #FFEE86
+			display: block
+			color: black
+			text-decoration: none
+			padding: 5px
+			margin-bottom: 2px
 
-#logout
-	display:inline
+		a:hover,
+		a.active
+			background: #FFBE5F
+			display: block
+			padding: 5px
+
+	.subnav
+		a
+			background: #fff
+			display: block
+			padding: 5px
+			color: black
+			text-decoration: none
+			border-left: 3px solid #FFBE5F
+
+		a:hover,
+		a.sub_active
+			background: #fff
+			display: block
+			padding: 5px
+			font-weight: bold
+			border-left: 3px solid #F15A24
+
+	div.body
+		background: #FFBE5F
+		margin-left: 20px
+		width: 70%
+		padding: 15px
+
+
+/* headarea */
 
 .head
-	margin:auto
-	height:90px
-	width:1200px
+	margin: 15px
 
-.account
-	width: 200px
-	border-radius: 10px 0 0 10px
-	border-top:1px solid #d2d2d2
-	padding-top:6px
-	padding-bottom:6px
-	padding-left:5px
-	+gradient(#555555,#333333)
-
-.arrow
-	background: url(DOCROOT/server/component/backend/backend-arrow.png) top right no-repeat
-
-.avatar_pic
-	float:left
-	width:80px
-	padding-left:6px
-
-	.thumbnail
-		background: white
+.avatar
 
 	img
-		height:64px
+		border:1px solid black
+		padding: 5px
+		float: left
 
-.avatar_content
-	float:right
-	width: 110px
+	h2
+		float: left
+		padding-left: 20px
+		font-size: 24px
 
-	h4
-		font-size:18px
-		text-decoration: underline
-		font-weight:normal
-		margin-bottom:4px
-		color:white
 
-	a
-		color: #dddddd
-		display:block
-		font-size: 12px
-		text-decoration: none
-		margin-bottom:7px
+.logo
+	text-align: right
+	margin-left: 60px
+	width: 70%
 
-	a:hover
-		color: #fff
 
-.main_nav
-	border-top:1px solid #8bd4ff
-	float:left
-	height:88px
-	width:957px
-	margin:0 !important
-	padding-top:6px
-	border-radius: 0 10px 10px 0
-	+gradient(#0083cc,#0058cc)
+/* forms */
 
-.active2
-	color: #fff !important
+.btn
+	padding: 5px 15px
+	background: white
+	color: #FFBE5F
+	font-weight: bold
+	border: none
+	cursor: pointer
 
-.main_nav ul
-	list-style:none
-	margin:0
-	padding:0
-	padding-right:25px
+.btn:hover
+	color: #F15A24
 
-	li a
-		display:block
-		float:left
-		color: white
-		font-size:20px
-		text-decoration:none
-		padding:34px
+.form-actions
+	margin-top: 10px
 
-	.active
-		+gradient(#3379d6,#339cd6)
+input
+	padding: 7px
+	border: none
+	margin: 5px 0
 
-.body
-	padding:18px
+label
+	display: block
 
-.subnav 
-	+gradient(#0083cc,#0058cc)
-	border-radius: 5px
-	margin-bottom:25px
-
-	ul
-		list-style: none
-		padding:0
-		margin:0
-
-	li a
-		display:block
-		padding:10px 5px
-		margin-left:10px
-		float:left
-		color:white
-
-.sub_active
-	+gradient(#3379d6,#339cd6)
+a.thumbnail img
+	min-width: 80px
+	min-height: 80px
+	border: 1px solid black
+	padding: 5px

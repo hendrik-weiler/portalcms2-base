@@ -7,6 +7,7 @@ return array(
 		'login' => 'Login',
 		'logout' => 'Logout',
 		'settings' => 'Settings',
+		'user_settings' => 'User settings',
 		'next' => 'Next',
 		'save' => 'Save',
 		'back' => 'Back',

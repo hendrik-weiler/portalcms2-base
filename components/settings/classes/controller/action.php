@@ -111,7 +111,7 @@ class Controller_Action extends \AuthController
 			&& !empty($new_password) 
 			&& !empty($new_password_repeat))
 		{
-			if(strlen($old_password) < 4 || strlen($new_password) < 4 || strlen($new_password_repeat) < 4)
+			if(strlen($new_password) < 4 || strlen($new_password_repeat) < 4)
 			{
 				$input['error_code'] = 6;
 				$response = \Helper\AjaxLoader::to_r(__('messages.6'));
