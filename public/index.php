@@ -34,7 +34,9 @@ defined('FUEL_START_MEM') or define('FUEL_START_MEM', memory_get_usage());
  */
 require APPPATH . 'module_injection.php';
 $GLOBALS['MODULES'] = module_injection::generate(array(
-	'install','server','helper','db','cstorage','logincenter','backend','settings','frontend',
+	'install','server','helper','db','cstorage','cassistant',
+	'cassistant_install','logincenter','backend','settings',
+	'frontend',
 ));
 
 // Boot the app

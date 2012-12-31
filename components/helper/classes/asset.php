@@ -1,0 +1,75 @@
+<?php
+/*
+ * Portal Content Management System Version 2
+ * Copyright (C) 2013  Hendrik Weiler
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author     Hendrik Weiler
+ * @license    http://www.gnu.org/licenses/gpl.html
+ * @copyright  2013 Hendrik Weiler
+ */
+
+namespace Helper;
+
+class Asset extends \Backend\Helper\Component
+{
+
+	public function from_component($file, $component = '')
+	{
+		static::analyze();
+
+		if($component == '') $component = static::$name;
+
+		return $this->generate_asset_string($component, $file);
+	}
+
+	public function from_public($path)
+	{
+		return $this->generate_asset_string('', $path, true);
+	}
+
+	public function generate_asset_string($current_component, $file, $is_public = false)
+	{
+
+		$filename = explode('.',$file);
+		$extension = $filename[count($filename) - 1];
+
+		$html = '<strong>Asset:</strong> ' . $file . ' couldnt be found.';
+
+		$link = 'server/component/' . $current_component;
+		$is_public and $link = 'server/public';
+
+		switch ($extension) 
+		{
+			case 'css':
+			case 'sass':
+				$html = '<link rel="stylesheet" type="text/css" href="' . \Uri::create($link. '/' . $file) . '" />';
+				break;
+			
+			case 'js':
+				$html = '<script type="text/javascript" href="' . \Uri::create($link . '/' . $file) . '"></script>';
+				break;
+
+			case 'jpg':
+			case 'jpeg':
+			case 'png':
+			case 'gif':
+				$html = '<img alt="' . str_replace('.' . $extension, '', $filename) . '" src="' . \Uri::create($link . '/' . $file) . '">';
+				break;
+		}
+
+		return $html;
+	}
+}

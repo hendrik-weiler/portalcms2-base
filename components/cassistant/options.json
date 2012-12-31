@@ -5,7 +5,7 @@
 		"en" : "Component assistant"
 	},
 	"nav_url" : "administration",
-	"nav_visible" : false,
+	"nav_visible" : true,
 	"type" :  "form",
 	"has_index" : false
 }

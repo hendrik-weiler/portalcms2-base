@@ -11,6 +11,8 @@ return array(
 		'delete_label' => 'Delete',
 		'entry_label' => 'Label',
 		'entry_value' => 'Value',
+		'install_component' => 'Install',
+		'uninstall_component' => 'Uninstall',
 	),
 
 	'th' => array(
@@ -20,6 +22,7 @@ return array(
 		'id' => 'Id-Name',
 		'core_components' => 'Core Components',
 		'non_core_components' => 'Other Components',
+		'install' => 'Installation',
 	),
 
 	'new_component' => 'Create a new component',

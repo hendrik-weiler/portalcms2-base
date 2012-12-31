@@ -15,11 +15,12 @@
 		print Asset::js('bootstrap.min.js');
 		print Asset::js('storage.js');
 		print Asset::js('tooltip.js');
+
+		print $asset->from_component('overlay.sass','backend');
+		print $asset->from_component('responsive.css','backend');
+		print $asset->from_public('redmond/jquery-ui-1.8.19.custom.css');
+		print $asset->from_component(Backend\Helper\Component::$name . '.sass');
 	?>
-	<link rel="stylesheet" type="text/css" href="<?php print Uri::create('server/component/backend/overlay.sass'); ?>">
-	<link rel="stylesheet" type="text/css" href="<?php print Uri::create('server/component/backend/responsive.css'); ?>">
-	<link rel="stylesheet" type="text/css" href="<?php print Uri::create('server/public/redmond/jquery-ui-1.8.19.custom.css'); ?>">
-	<link rel="stylesheet" type="text/css" href="<?php print \Uri::create('server/component/' . Backend\Helper\Component::$name . '/' . Backend\Helper\Component::$name . '.sass'); ?>">
 </head>
 <body>
 	<div class="container">

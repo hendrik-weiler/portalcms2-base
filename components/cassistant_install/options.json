@@ -1,0 +1,11 @@
+{
+	"label" : {
+		"default" : "Installer Assistant Component",
+		"de" : "Installationsassistent Komponenten",
+		"en" : "Installer Assistant Component"
+	},
+	"nav_url" : "administration",
+	"nav_visible" : false,
+	"type" : "form",
+	"has_index" : false
+}

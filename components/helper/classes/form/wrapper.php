@@ -57,6 +57,11 @@ class Wrapper extends \Form
 		$this->select = new Select();
 	}
 
+	public function clear()
+	{
+		static::$current_form = array();
+	}
+
 	public function create($url, $type='horizontal', $class='', $returns_back = false)
 	{
 		static::$current_form = array();
@@ -81,8 +86,13 @@ class Wrapper extends \Form
 		static::$current_form[]  = $html;
 	}
 
-	public function __invoke()
+	public function render()
 	{
 		return implode('',static::$current_form) . static::close();
+	}
+
+	public function __invoke()
+	{
+		return $this->render();
 	}
 }

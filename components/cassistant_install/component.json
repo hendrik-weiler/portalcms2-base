@@ -1,0 +1,9 @@
+{
+	"version" : 0.1,
+	"category" : "Component Assistant",
+	"id" : "cassistant-installer",
+	"author" : "Hendrik Weiler",
+	"replace-component" : "none",
+	"loaded" : true,
+	"frontend_display" : false
+}

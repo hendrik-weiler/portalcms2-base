@@ -70,6 +70,12 @@ class BackendController extends \AuthController
 		$this->data->option = $this->option;	
 
 		$this->data->form = new \Helper\Form\Wrapper();
+
+		$this->data->asset = new \Helper\Asset();
+
+		$this->data->to_html = function($html) {
+			return html_entity_decode($html);
+		};
 	}
 
 	public function no_render()

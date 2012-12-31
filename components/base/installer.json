@@ -1,0 +1,5 @@
+{
+	"description" : "The Base component!<br> its a real nice component with have nothing but the base stuff needed to start.",
+	"behaviour" : ["modify_database","have_interaction"],
+	"interaction_views" : []
+}

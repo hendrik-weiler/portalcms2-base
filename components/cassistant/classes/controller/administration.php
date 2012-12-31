@@ -43,6 +43,8 @@ class Controller_Administration extends \BackendController
 			$row->version = $components->version;
 			$row->id = $components->id;
 			$row->category = $components->category;
+			$row->install = false;
+			if(file_exists(DOCROOT . '../components/' . $row->name . '/installer.json')) $row->install = true;
 			$component_categories[] = $row->category;
 			return $row;
 		}, $this->data->all_modules);
