@@ -26,13 +26,26 @@ namespace Helper;
 class Asset extends \Backend\Helper\Component
 {
 
+	public $is_not_a_component = false;
+
 	public function from_component($file, $component = '')
 	{
-		static::analyze();
+		if($this->is_not_a_component && empty($component)) throw new \Exception('You have to set the second parameter in frontend.');
+
+		if(!$this->is_not_a_component) static::analyze();
 
 		if($component == '') $component = static::$name;
 
 		return $this->generate_asset_string($component, $file);
+	}
+
+	public function from_layout($path, $layout = '')
+	{
+		if(empty($layout))
+		{
+			$layout = \db\option::getKey('selected_layout')->value;
+		}
+		return $this->generate_asset_string('', $path, false, $layout);
 	}
 
 	public function from_public($path)
@@ -40,7 +53,7 @@ class Asset extends \Backend\Helper\Component
 		return $this->generate_asset_string('', $path, true);
 	}
 
-	public function generate_asset_string($current_component, $file, $is_public = false)
+	public function generate_asset_string($current_component, $file, $is_public = false, $is_layout = false)
 	{
 
 		$filename = explode('.',$file);
@@ -50,6 +63,10 @@ class Asset extends \Backend\Helper\Component
 
 		$link = 'server/component/' . $current_component;
 		$is_public and $link = 'server/public';
+		if($is_layout != false)
+		{
+			$link = 'server/layout/' . $is_layout;
+		}
 
 		switch ($extension) 
 		{

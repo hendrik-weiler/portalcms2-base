@@ -3,10 +3,10 @@
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
- * @version    1.0
+ * @version    1.5
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2011 Fuel Development Team
+ * @copyright  2010 - 2013 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -23,6 +23,8 @@ class Command
 {
 	public static function init($args)
 	{
+		\Config::load('oil', true);
+
 		// Remove flag options from the main argument list
 		$args = self::_clear_args($args);
 
@@ -32,7 +34,7 @@ class Command
 			{
 				if (\Cli::option('v', \Cli::option('version')))
 				{
-					\Cli::write('Fuel: '.\Fuel::VERSION);
+					\Cli::write('Fuel: '.\Fuel::VERSION.' running in "'.\Fuel::$env.'" mode');
 					return;
 				}
 
@@ -59,6 +61,7 @@ class Command
 						case 'controller':
 						case 'model':
 						case 'migration':
+						case 'task':
 							call_user_func('Oil\Generate::'.$action, array_slice($args, 3));
 						break;
 
@@ -153,7 +156,8 @@ class Command
 
 					// Suppressing this because if the file does not exist... well thats a bad thing and we can't really check
 					// I know that supressing errors is bad, but if you're going to complain: shut up. - Phil
-					@include_once('PHPUnit/Autoload.php');
+					$phpunit_autoload_path = \Config::get('oil.phpunit.autoload_path', 'PHPUnit/Autoload.php' );
+					@include_once($phpunit_autoload_path);
 
 					// Attempt to load PHUnit.  If it fails, we are done.
 					if ( ! class_exists('PHPUnit_Framework_TestCase'))
@@ -172,10 +176,12 @@ class Command
 					}
 
 					// CD to the root of Fuel and call up phpunit with the path to our config
-					$command = 'cd '.DOCROOT.'; phpunit -c "'.$phpunit_config.'"';
+					$phpunit_command = \Config::get('oil.phpunit.binary_path', 'phpunit');
+					$command = 'cd '.DOCROOT.'; '.$phpunit_command.' -c "'.$phpunit_config.'"';
 
-					// Respect the group option
+					// Respect the group options
 					\Cli::option('group') and $command .= ' --group '.\Cli::option('group');
+					\Cli::option('exclude-group') and $command .= ' --exclude-group '.\Cli::option('exclude-group');
 
 					// Respect the coverage-html option
 					\Cli::option('coverage-html') and $command .= ' --coverage-html '.\Cli::option('coverage-html');

@@ -31,6 +31,8 @@ class Controller_Server extends \ComponentController
 
 	private static $is_public_asset = false;
 
+	private static $is_layout_asset = false;
+
 	private static $is_tooltip = false;
 
 	private function _get_type($identifier)
@@ -197,6 +199,12 @@ class Controller_Server extends \ComponentController
 		return $this->response;
 	}
 
+	public function action_layout()
+	{
+		static::$is_layout_asset = true;
+		return $this->action_component();
+	}
+
 	public function action_component()
 	{
 		$component = $this->param('component');
@@ -214,8 +222,14 @@ class Controller_Server extends \ComponentController
 		if(!in_array($type,array('js','css','sass','scss','coffee')))
 			$type = 'img';
 
-		if(static::$is_public_asset)
+		if(static::$is_layout_asset)
+		{
+			$path = DOCROOT . '../layout/' . $component . '/assets/' . $type . '/' . $file;
+		}
+		else if(static::$is_public_asset)
+		{
 			$path = DOCROOT . 'assets/' . $type . '/' . $component . '/' . $file;
+		}
 		else if(static::$is_tooltip)
 		{
 			$path = APPPATH . '../../components/' . $component . '/tooltip/' . str_replace('-', '/', $this->param('path')) . '.xml';

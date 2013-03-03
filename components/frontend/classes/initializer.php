@@ -77,6 +77,9 @@ class Initializer extends \ComponentController
 			exit;
 		}
 
+		static::$component_output['asset'] = new \Helper\Asset();
+		static::$component_output['asset']->is_not_a_component = true;
+
 		return \View::forge($this->path->layouts . '/' . $selected_layout->value . '/' . static::$base_layout, static::$component_output);
 	}
 
