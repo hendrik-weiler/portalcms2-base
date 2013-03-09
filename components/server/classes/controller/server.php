@@ -205,6 +205,21 @@ class Controller_Server extends \ComponentController
 		return $this->action_component();
 	}
 
+	public function action_svg_component()
+	{
+		$component = $this->param('component');
+		$path = $this->param('filepath');
+
+		$path = str_replace(array('(',')','$'),array('','','../'),$path);
+
+		$real_path = DOCROOT . '../components/' . $component . '/' . $path . '.svg';
+
+		$this->response->set_header('Content-Type','image/svg+xml');
+		$this->response->body = file_get_contents($real_path);
+
+		return $this->response;
+	}
+
 	public function action_component()
 	{
 		$component = $this->param('component');

@@ -2,12 +2,12 @@
 	<a class="btn" href="<?php print \Uri::create('cassistant/administration/components/new_component') ?>"><?php print __('new_component') ?></a>
 </div>
 <br>
-<div class="yui3-g chead">
-	<div class="yui3-u-1-5"><?php print __('th.name') ?></div>
-	<div class="yui3-u-1-5"><?php print __('th.id') ?></div>
-	<div class="yui3-u-1-5"><?php print __('th.version') ?></div>
-	<div class="yui3-u-1-5"><?php print __('th.status') ?></div>
-	<div class="yui3-u-1-5"><?php print __('th.install') ?></div>
+<div class="row chead">
+	<div class="span2"><?php print __('th.name') ?></div>
+	<div class="span2"><?php print __('th.id') ?></div>
+	<div class="span2"><?php print __('th.version') ?></div>
+	<div class="span2"><?php print __('th.status') ?></div>
+	<div class="span2"><?php print __('th.install') ?></div>
 </div>
 
 <?php foreach($component_categories as $category): ?>
@@ -17,12 +17,12 @@
 
 <?php foreach($all_modules as $module): ?>
 <?php if($module->category == $category): ?>
-<div class="yui3-g crow">
-	<div class="yui3-u-1-5"><?php print $module->name; ?></div>
-	<div class="yui3-u-1-5"><?php print $module->id; ?></div>
-	<div class="yui3-u-1-5"><?php print $module->version; ?></div>
-	<div class="yui3-u-1-5"><?php print $module->status ? __('active') : __('inactive'); ?></div>
-	<div class="yui3-u-1-5">
+<div class="row crow">
+	<div class="span2"><?php print $module->name; ?></div>
+	<div class="span2"><?php print $module->id; ?></div>
+	<div class="span2"><?php print $module->version; ?></div>
+	<div class="span2"><?php print $module->status ? __('active') : __('inactive'); ?></div>
+	<div class="span2">
 		<?php 
 		if($module->install)
 		{

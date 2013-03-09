@@ -1,102 +1,87 @@
 body
 	margin: auto
 	font-family: Arial;
-
-	.navigation
-		ul
-			margin: 0
-			padding: 0
-		li
-			list-style: none
-		a
-			background: #FFEE86
-			display: block
-			color: black
-			text-decoration: none
-			padding: 5px
-			margin-bottom: 2px
-
-		a:hover,
-		a.active
-			background: #FFBE5F
-			display: block
-			padding: 5px
-
-	.subnav
-		a
-			background: #fff
-			display: block
-			padding: 5px
-			color: black
-			text-decoration: none
-			border-left: 3px solid #FFBE5F
-
-		a:hover,
-		a.sub_active
-			background: #fff
-			display: block
-			padding: 5px
-			font-weight: bold
-			border-left: 3px solid #F15A24
-
-	div.body
-		background: #FFBE5F
-		margin-left: 20px
-		width: 70%
-		padding: 15px
-
-
-/* headarea */
-
-.head
-	margin: 15px
-
-.avatar
-
-	img
-		border:1px solid black
-		padding: 5px
-		float: left
-
-	h2
-		float: left
-		padding-left: 20px
-		font-size: 24px
-
-
-.logo
-	text-align: right
-	margin-left: 60px
-	width: 70%
-
-
-/* forms */
-
-.btn
-	padding: 5px 15px
 	background: white
-	color: #FFBE5F
-	font-weight: bold
-	border: none
-	cursor: pointer
-	text-decoration: none
 
-.btn:hover
-	color: #F15A24
+.navigation ul
+	list-style: none
 
-.form-actions
-	margin-top: 10px
+	li
+		float: left
+		margin: 50px
+		width: 100px;
+		height: 100px;
+		text-align: center
+		a
+			color: #555555;
+			text-decoration: none
 
-input
-	padding: 7px
-	border: none
-	margin: 5px 0
+			img
+				padding-bottom: 5px
 
-label
-	display: block
+		a:hover
+			color: #111111;
 
-a.thumbnail img
-	min-width: 80px
-	min-height: 80px
-	border: 1px solid black
+.user 
+	background: #555;
+	color: white
+	padding: 10px
+
+	div.info
+		float:left
+		width: 49%
+		img
+			float:left
+			padding: 3px
+			border: 2px solid white
+
+		h5
+			float: left
+			padding-top: 18px
+			padding-left: 20px
+
+	div.pcms2
+		width: 49%
+		float:left
+		text-align: right
+
+		img
+			width: 260px
+
+.component-box
+	background: #aaaaaa
 	padding: 5px
+
+	.controls
+		float: left
+		width: 10%
+		padding-top: 3px
+		text-align: right
+
+		img
+			width: 35px
+
+	.subnav 
+		float: left
+		width: 89%
+
+		ul
+			list-style: none
+
+			a
+				display: block
+				color: #999999
+				text-decoration: none
+				background: #eeeeee
+				padding: 10px
+				float: left
+
+			a.sub_active,
+			a:hover
+				background: #ffffff
+				color: #111111
+
+
+.content
+	margin-top: 30px
+	margin-bottom: 30px

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tooltips>
+	<tooltip selector=".navigation a[href*=logout]" language="de" position="bottom">
+		Hier kannst du dich vom System ausloggen.
+	</tooltip>
+	<tooltip selector=".navigation a[href*=logout]" language="en" position="bottom">
+		Here you logout from the system.
+	</tooltip>
+
+	<tooltip selector=".controls a[href*=landing]" language="de" position="bottom">
+		Zurück zur Komponentenübersicht.
+	</tooltip>
+	<tooltip selector=".controls a[href*=landing]" language="en" position="bottom">
+		Back to Components overview.
+	</tooltip>
+</tooltips>

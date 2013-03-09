@@ -3,7 +3,6 @@
 <head>
 	<title><?php print $title; ?></title>
 	<?php
-		print Asset::css('base.min.css');
 		print Asset::css('autocomplete.css');
 
 		print \Helper\JsVarBase::render();
@@ -16,46 +15,38 @@
 		print Asset::js('storage.js');
 		print Asset::js('tooltip.js');
 
+		print $asset->from_component('bootstrap.min.css','backend');
+		print $asset->from_component('bootstrap-responsive.min.css','backend');
 		print $asset->from_component('overlay.sass','backend');
-		print $asset->from_component('responsive.css','backend');
 		print $asset->from_public('redmond/jquery-ui-1.8.19.custom.css');
 		print $asset->from_component(Backend\Helper\Component::$name . '.sass');
 	?>
 </head>
 <body>
-	<div class="container">
-		<div class="head yui3-u-1">
-			<div class="yui3-g">
-				<div class="yui3-u-5-24 account">
-					<div class="avatar">
-						<img class="thumbnail" src="<?php print \Uri::create('uploads/avatars/' . $account->id . '/medium/' . $avatar->picture); ?>" />
-						<h2><?php print $account->username; ?></h2>	
-					</div>
-				</div>
-				<div class="yui3-u-19-24 logo">
-					<img src="<?php print \Uri::create('server/component/backend/logo.png') ?>">
-				</div>
+	<div class="user">
+		<div class="container">
+			<div class="info">
+				<img src="<?php print \Uri::create('uploads/avatars/' . $account->id . '/medium/' . $avatar->picture); ?>" />
+				<h5><?php print $account->username; ?></h5>	
+			</div>
+			<div class="pcms2">
+				<?php print $asset->from_component('logo.png','backend') ?>
 			</div>
 		</div>
-		<div class="yui3-g">
-			<div class="navigation yui3-u-5-24">
-				<!-- <?php print Form::select('language',\Session::get('current_language',\db\Language::getLanguages())) ?> -->
-				<ul>
-				<?php foreach($components as $component): ?>
-					<?php if(isset($component->nav_visible) && $component->nav_visible): ?>
-					<li>
-						<a <?php \Uri::segment(1) == $component->name and print 'class="active"' ?> href="<?php print \Uri::Create($component->name . '/' . $component->nav_url); ?>"><?php print $component->label->default; ?></a>
-						<?php if(\Uri::segment(1) == $component->name) print html_entity_decode($component_navigation); ?>
-					</li>
-					<?php endif; ?>
-				<?php endforeach; ?>
-					<li><a <?php \Uri::segment(1) == 'settings' and print 'class="active"' ?> href="<?php print \Uri::create('settings/administration') ?>"><?php print __('global.user_settings') ?></a></li>
-					<li><a id="logout" href="<?php print \Uri::create('logincenter/action/logout'); ?>"><?php print __('global.logout') ?></a></li>
-				</ul>
+	</div>
+	<div class="component-box row">
+		<div class="container">
+			<?php print $to_html($component_navigation) ?>
+			<div class="controls">
+				<a href="<?php print \Uri::create('backend/landing/index') ?>">
+					<img src="<?php print Uri::create('server/svg/backend/assets/img/close') ?>">
+				</a>
 			</div>
-			<div class="body yui3-u-19-24">
-				<?php print $component_content; ?>
-			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="content">
+			<?php print $component_content ?>
 		</div>
 	</div>
 </body>

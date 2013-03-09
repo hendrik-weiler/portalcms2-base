@@ -20,35 +20,12 @@
  * @license    http://www.gnu.org/licenses/gpl.html
  * @copyright  2013 Hendrik Weiler
  */
-namespace Logincenter;
+namespace backend;
 
-class Controller_Logincenter extends \Controller
+class Controller_Landing extends \BackendController
 {
-
-	protected $data;
-
-	public function before()
-	{
-
-		$this->data = new \stdClass;
-		\Lang::load('login');
-		\Lang::load('messages');
-
-		$this->data->title = 'Logincenter';
-	}
-
 	public function action_index()
 	{
-		$saved_logins = \Session::get('saved_logins');
-		\Backend\Helper\Component::analyze();
-		$this->data->asset = new \Helper\Asset();
-		$this->data->accounts = empty($saved_logins) ? array() : $saved_logins;
-	}
-
-	public function after($response)
-	{
-		return \Response::forge(
-			\View::forge('login',$this->data)
-		);
+		$this->main_template('backend::landing');
 	}
 }

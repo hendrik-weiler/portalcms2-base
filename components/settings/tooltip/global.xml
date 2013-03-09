@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tooltips>
+	<tooltip selector=".navigation a[href*=settings]" language="de" position="bottom">
+		Hier kannst du änderungen an deinem Profil vornehmen.
+	</tooltip>
+	<tooltip selector=".navigation a[href*=settings]" language="en" position="bottom">
+		Here you can change your profile settings.
+	</tooltip>
+</tooltips>

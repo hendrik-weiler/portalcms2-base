@@ -7,7 +7,7 @@ return array(
 
 	'login' => array(
 
-		'start_module' => 'layout',
+		'start_module' => 'backend',
 
 	),
  

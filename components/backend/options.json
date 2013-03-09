@@ -1,0 +1,11 @@
+{
+	"label" : {
+		"default" : "Backend",
+		"de" : "Backend",
+		"en" : "Backend"
+	},
+	"nav_url" : "backend",
+	"nav_visible" : false,
+	"type" : "form",
+	"has_index" : true
+}

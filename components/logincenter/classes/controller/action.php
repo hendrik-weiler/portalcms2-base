@@ -72,17 +72,16 @@ class Controller_Action extends \Controller
 					'picture' => \db\AccountsAvatars::getAvatarByAccountId($account->id)->picture
 				);
 				\Session::set('saved_logins',static::_clear_logins($saved_logins,$new_login));
-				$msg_id = 1;
+				
+				\Response::redirect('backend/landing/index');
 			}
 			else
 			{
 				$msg_id = 2;
 			}
 		}
-		
-		return \Helper\AjaxLoader::get_response($input, 
-			\Helper\AjaxLoader::to_r(__('messages.' . $msg_id))
-		);
+
+		\Response::redirect('logincenter?msg_id=' . $msg_id);
 	}
 
 	public function action_logout()

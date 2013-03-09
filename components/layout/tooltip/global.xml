@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tooltips>
+	<tooltip selector=".navigation a[href*=layout]" language="de" position="bottom">
+		Hier kann das Layout angepasst werden.
+	</tooltip>
+	<tooltip selector=".navigation a[href*=layout]" language="en" position="bottom">
+		Here you can manage your layouts.
+	</tooltip>
+</tooltips>

@@ -55,7 +55,10 @@ class Component
 
 	protected static function _get_url()
 	{
+
 		static::$url_segment = \Uri::segments();
+
+		if(!isset(static::$url_segment[1])) return;
 
 		static::$base_url = \Uri::create(implode('/',array(static::$url_segment[0],static::$url_segment[1])));
 

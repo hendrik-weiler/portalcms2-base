@@ -1,0 +1,11 @@
+{
+	"label" : {
+		"default" : "Logincenter",
+		"de" : "Logincenter",
+		"en" : "Logincenter"
+	},
+	"nav_url" : "administration",
+	"nav_visible" : false,
+	"type" : "form",
+	"has_index" : false
+}

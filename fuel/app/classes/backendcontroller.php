@@ -32,9 +32,16 @@ class BackendController extends \AuthController
 
 	private $_template = false;
 
+	private $_main_template = false;
+
 	protected function template($name)
 	{
 		$this->_template = $name;
+	}
+
+	protected function main_template($name)
+	{
+		$this->_main_template = $name;
 	}
 
 	public function before()
@@ -76,6 +83,7 @@ class BackendController extends \AuthController
 		$this->data->to_html = function($html) {
 			return html_entity_decode($html);
 		};
+
 	}
 
 	public function no_render()
@@ -105,7 +113,8 @@ class BackendController extends \AuthController
 			
 		if(is_array($this->component->options['type']) 
 			&& $this->component->options['type'][$this->component->current_index] == 'form'
-			|| $this->component->options['type'] == 'form')
+			|| $this->component->options['type'] == 'form'
+			&& $this->_main_template == false)
 		{
 			$this->data->component_content = \View::forge(\Backend\Helper\Component::$current_index,$this->data);
 			$view = 'backend::overlay_form';
@@ -114,6 +123,11 @@ class BackendController extends \AuthController
 		if($this->_template != false)
 		{
 			$this->data->component_content = \View::forge($this->_template,$this->data);
+		}
+
+		if($this->_main_template != false)
+		{
+			$view = $this->_main_template;
 		}
 			
 		return \Response::forge(\View::forge($view,$this->data));
