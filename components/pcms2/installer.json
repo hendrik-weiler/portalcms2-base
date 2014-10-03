@@ -1,0 +1,5 @@
+{
+	"description" : "This will install the cms.",
+	"behaviour" : ["modify_database","have_interaction"],
+	"interaction_views" : ["language_selection"]
+}

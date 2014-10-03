@@ -3,10 +3,10 @@
  * Part of the Fuel framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -104,6 +104,26 @@ class File
 	}
 
 	/**
+	 * Check for file existence
+	 *
+	 * @param   string  path to file to check
+	 * @param   string|File_Area|null  file area name, object or null for base area
+	 * @return  bool
+	 */
+	public static function exists($path, $area = null)
+	{
+		$path = rtrim(static::instance($area)->get_path($path), '\\/');
+
+		// resolve symlinks
+		while ($path and is_link($path))
+		{
+			$path = readlink($path);
+		}
+
+		return is_file($path);
+	}
+
+	/**
 	 * Create an empty file
 	 *
 	 * @param   string  directory where to create file
@@ -120,7 +140,7 @@ class File
 		{
 			throw new \InvalidPathException('Invalid basepath: "'.$basepath.'", cannot create file at this location.');
 		}
-		elseif (file_exists($new_file))
+		elseif (is_file($new_file))
 		{
 			throw new \FileAccessException('File: "'.$new_file.'" already exists, cannot be created.');
 		}
@@ -144,21 +164,45 @@ class File
 	public static function create_dir($basepath, $name, $chmod = null, $area = null)
 	{
 		$basepath	= rtrim(static::instance($area)->get_path($basepath), '\\/').DS;
-		$new_dir	= static::instance($area)->get_path($basepath.$name);
+		$new_dir	= static::instance($area)->get_path($basepath.trim($name,'\\/'));
 		is_null($chmod) and $chmod = \Config::get('file.chmod.folders', 0777);
 
 		if ( ! is_dir($basepath) or ! is_writable($basepath))
 		{
 			throw new \InvalidPathException('Invalid basepath: "'.$basepath.'", cannot create directory at this location.');
 		}
-		elseif (file_exists($new_dir))
+		elseif (is_dir($new_dir))
 		{
 			throw new \FileAccessException('Directory: "'.$new_dir.'" exists already, cannot be created.');
 		}
 
-		$recursive = (strpos($name, '/') !== false or strpos($name, '\\') !== false);
+		// unify the path separators, and get the part we need to add to the basepath
+		$new_dir = substr(str_replace(array('\\', '/'), DS, $new_dir), strlen($basepath));
 
-		return mkdir($new_dir, $chmod, $recursive);
+		// recursively create the directory. we can't use mkdir permissions or recursive
+		// due to the fact that mkdir is restricted by the current users umask
+		$basepath = rtrim($basepath, DS);
+		foreach (explode(DS, $new_dir) as $dir)
+		{
+			$basepath .= DS.$dir;
+			if ( ! is_dir($basepath))
+			{
+				try
+				{
+					if ( ! mkdir($basepath))
+					{
+						return false;
+					}
+					chmod($basepath, $chmod);
+				}
+				catch (\PHPErrorException $e)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -173,7 +217,7 @@ class File
 	{
 		$path = static::instance($area)->get_path($path);
 
-		if( ! file_exists($path) or ! is_file($path))
+		if ( ! is_file($path))
 		{
 			throw new \InvalidPathException('Cannot read file: "'.$path.'", file does not exists.');
 		}
@@ -343,7 +387,7 @@ class File
 		$basepath  = rtrim(static::instance($area)->get_path($basepath), '\\/').DS;
 		$new_file  = static::instance($area)->get_path($basepath.$name);
 
-		if ( ! file_exists($new_file))
+		if ( ! is_file($new_file))
 		{
 			throw new \FileAccessException('File: "'.$new_file.'" does not exist, cannot be appended.');
 		}
@@ -689,15 +733,13 @@ class File
 	 */
 	public static function close_file($resource, $area = null)
 	{
-		fclose($resource);
-
 		// If locks aren't used, don't unlock
-		if ( ! static::instance($area)->use_locks())
+		if ( static::instance($area)->use_locks())
 		{
-			return;
+			flock($resource, LOCK_UN);
 		}
 
-		flock($resource, LOCK_UN);
+		fclose($resource);
 	}
 
 	/**
@@ -723,7 +765,7 @@ class File
 			'time_modified' => '',
 		);
 
-		if ( ! $info['realpath'] = static::instance($area)->get_path($path) or ! file_exists($info['realpath']))
+		if ( ! $info['realpath'] = static::instance($area)->get_path($path) or ! is_file($info['realpath']))
 		{
 			throw new \InvalidPathException('Filename given is not a valid file.');
 		}
@@ -760,15 +802,18 @@ class File
 	 * @param  string|null  custom name for the file to be downloaded
 	 * @param  string|null  custom mime type or null for file mime type
 	 * @param  string|File_Area|null  file area name, object or null for base area
+	 * @param  bool         delete the file after download when true
+	 * @param  string       disposition, must be 'attachment' or 'inline'
 	 */
-	public static function download($path, $name = null, $mime = null, $area = null)
+	public static function download($path, $name = null, $mime = null, $area = null, $delete = false, $disposition = 'attachment')
 	{
 		$info = static::file_info($path, $area);
 		$class = get_called_class();
 		empty($mime) or $info['mimetype'] = $mime;
 		empty($name) or $info['basename'] = $name;
+		in_array($disposition, array('inline', 'attachment')) or $disposition = 'attachment';
 
-		\Event::register('shutdown', function () use($info, $area, $class) {
+		\Event::register('fuel-shutdown', function () use($info, $area, $class, $delete, $disposition) {
 
 			if ( ! $file = call_user_func(array($class, 'open_file'), @fopen($info['realpath'], 'rb'), LOCK_SH, $area))
 			{
@@ -784,12 +829,12 @@ class File
 			! ini_get('safe_mode') and set_time_limit(0);
 
 			header('Content-Type: '.$info['mimetype']);
-			header('Content-Disposition: attachment; filename="'.$info['basename'].'"');
-			header('Content-Description: File Transfer');
+			header('Content-Disposition: '.$disposition.'; filename="'.$info['basename'].'"');
+			$disposition == 'attachment' and header('Content-Description: File Transfer');
 			header('Content-Length: '.$info['size']);
 			header('Content-Transfer-Encoding: binary');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			$disposition == 'attachment' and header('Expires: 0');
+			$disposition == 'attachment' and header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 
 			while( ! feof($file))
 			{
@@ -797,6 +842,11 @@ class File
 			}
 
 			call_user_func(array($class, 'close_file'), $file, $area);
+
+			if ($delete)
+			{
+				call_user_func(array($class, 'delete'), $info['realpath'], $area);
+			}
 		});
 
 		exit;

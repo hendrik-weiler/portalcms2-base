@@ -3,10 +3,10 @@
  * Part of the Fuel framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -103,8 +103,16 @@ return array(
 	'auto_render' => true,
 
 	/**
-	 * Set to false to prevent an exception from being throw when a file is not found.
+	 * Set to true to prevent an exception from being throw when a file is not found.
 	 * The asset will then be skipped.
 	 */
 	'fail_silently' => false,
+
+	/**
+	 * When set to true, the Asset class will always true to resolve an asset URI
+	 * to a local asset, even if the asset URL is an absolute URL, for example
+	 * one that points to another hostname.
+	 */
+	'always_resolve' => false,
+
 );

@@ -59,6 +59,8 @@ class Asset extends \Backend\Helper\Component
 		$filename = explode('.',$file);
 		$extension = $filename[count($filename) - 1];
 
+		$timestamp = time();
+
 		$html = '<strong>Asset:</strong> ' . $file . ' couldnt be found.';
 
 		$link = 'server/component/' . $current_component;
@@ -72,17 +74,20 @@ class Asset extends \Backend\Helper\Component
 		{
 			case 'css':
 			case 'sass':
-				$html = '<link rel="stylesheet" type="text/css" href="' . \Uri::create($link. '/' . $file) . '" />';
+				$html = '<link rel="stylesheet" type="text/css" href="' . \Uri::create($link. '/' . $file) . '?' . $timestamp . '" />';
 				break;
 			
 			case 'js':
-				$html = '<script type="text/javascript" href="' . \Uri::create($link . '/' . $file) . '"></script>';
+				$html = '<script type="text/javascript" href="' . \Uri::create($link . '/' . $file) . '?' . $timestamp . '"></script>';
 				break;
 
 			case 'jpg':
 			case 'jpeg':
 			case 'png':
 			case 'gif':
+				if(is_array($filename)) {
+					$filename = implode('.', $filename);
+				}
 				$html = '<img alt="' . str_replace('.' . $extension, '', $filename) . '" src="' . \Uri::create($link . '/' . $file) . '">';
 				break;
 		}

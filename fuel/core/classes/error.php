@@ -3,10 +3,10 @@
  * Part of the Fuel framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -19,7 +19,10 @@ class PhpErrorException extends \ErrorException
 {
 	public static $count = 0;
 
-	public function handle()
+	/**
+	 * Allow the error handler from recovering from error types defined in the config
+	 */
+	public function recover()
 	{
 		// handle the error based on the config and the environment we're in
 		if (static::$count <= Config::get('errors.throttle', 10))
@@ -49,19 +52,22 @@ class Error
 {
 
 	public static $levels = array(
-		0                  => 'Error',
-		E_ERROR            => 'Error',
-		E_WARNING          => 'Warning',
-		E_PARSE            => 'Parsing Error',
-		E_NOTICE           => 'Notice',
-		E_CORE_ERROR       => 'Core Error',
-		E_CORE_WARNING     => 'Core Warning',
-		E_COMPILE_ERROR    => 'Compile Error',
-		E_COMPILE_WARNING  => 'Compile Warning',
-		E_USER_ERROR       => 'User Error',
-		E_USER_WARNING     => 'User Warning',
-		E_USER_NOTICE      => 'User Notice',
-		E_STRICT           => 'Runtime Notice'
+		0                   => 'Error',
+		E_ERROR             => 'Fatal Error',
+		E_WARNING           => 'Warning',
+		E_PARSE             => 'Parsing Error',
+		E_NOTICE            => 'Notice',
+		E_CORE_ERROR        => 'Core Error',
+		E_CORE_WARNING      => 'Core Warning',
+		E_COMPILE_ERROR     => 'Compile Error',
+		E_COMPILE_WARNING   => 'Compile Warning',
+		E_USER_ERROR        => 'User Error',
+		E_USER_WARNING      => 'User Warning',
+		E_USER_NOTICE       => 'User Notice',
+		E_STRICT            => 'Runtime Notice',
+		E_RECOVERABLE_ERROR => 'Runtime Recoverable error',
+		E_DEPRECATED        => 'Runtime Deprecated code usage',
+		E_USER_DEPRECATED   => 'User Deprecated code usage',
 	);
 
 	public static $fatal_levels = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
@@ -145,8 +151,9 @@ class Error
 			}
 			else
 			{
+				// non-fatal, recover from the error
 				$e = new \PhpErrorException($message, $severity, 0, $filepath, $line);
-				$e->handle();
+				$e->recover();
 			}
 		}
 
@@ -182,6 +189,11 @@ class Error
 		if (\Fuel::$is_cli)
 		{
 			\Cli::write(\Cli::color($data['severity'].' - '.$data['message'].' in '.\Fuel::clean_path($data['filepath']).' on line '.$data['error_line'], 'red'));
+			if (\Config::get('cli_backtrace'))
+			{
+				\Cli::write('Stack trace:');
+				\Cli::write(\Debug::backtrace($e->getTrace()));
+			}
 			return;
 		}
 
@@ -298,5 +310,3 @@ class Error
 	}
 
 }
-
-

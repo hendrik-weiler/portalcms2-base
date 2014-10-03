@@ -3,10 +3,10 @@
  * Part of the Fuel framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -195,5 +195,15 @@ class File_Handler_File
 	{
 		return $this->area->get_size($this->path);
 	}
-}
 
+	/**
+	 * Get the file's path.
+	 *
+	 * @return	string		File path
+	 */
+	public function get_path()
+	{
+		return $this->path;
+	}
+
+}

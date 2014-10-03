@@ -4,6 +4,21 @@
 		print Form::label(__('form.name'));
 		print Form::input('name','');
 
+		print Form::label(__('form.id'));
+		print Form::input('id','');
+
+		print Form::label(__('form.version'));
+		print Form::input('version','');
+
+		print Form::label(__('form.category'));
+		print Form::input('category','');
+
+		print Form::label(__('form.author'));
+		print Form::input('author','');
+
+		print Form::label(__('form.frontend_display'));
+		print Form::checkbox('frontend_display',1);
+
 		print Form::label(__('form.options'));
 
 		print Form::label(__('form.visible'));

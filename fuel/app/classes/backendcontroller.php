@@ -100,14 +100,20 @@ class BackendController extends \AuthController
 		$this->data->component_navigation = \Backend\Helper\Navigation::render(__('component_navigation'));
 
 		if(is_array($this->component->options['type']) 
-			&& $this->component->options['type'][$this->component->current_index] == 'dragdropgrid')
+			&& $this->component->options['type'][$this->component->current_index] == 'interactive'
+			|| $this->component->options['type'] == 'interactive'
+			&& $this->_main_template == false)
 		{
-			$view = 'backend::overlay_dragdropgrid';
+			$this->data->component_content = \View::forge(\Backend\Helper\Component::$current_index,$this->data);
+			$view = 'backend::overlay_interactive';
 		}
 			
 		if(is_array($this->component->options['type']) 
-			&& $this->component->options['type'][$this->component->current_index] == 'dragdrop')
+			&& $this->component->options['type'][$this->component->current_index] == 'dragdrop'
+			|| $this->component->options['type'] == 'dragdrop'
+			&& $this->_main_template == false)
 		{
+			$this->data->component_content = \View::forge(\Backend\Helper\Component::$current_index,$this->data);
 			$view = 'backend::overlay_dragdrop';
 		}
 			
@@ -129,7 +135,7 @@ class BackendController extends \AuthController
 		{
 			$view = $this->_main_template;
 		}
-			
+
 		return \Response::forge(\View::forge($view,$this->data));
 	}
 }

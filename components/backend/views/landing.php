@@ -30,7 +30,7 @@
 				<h5><?php print $account->username; ?></h5>	
 			</div>
 			<div class="pcms2">
-				<?php print $asset->from_component('logo.png','backend') ?>
+				<?php print $asset->from_component('logo-small.png','backend') ?>
 			</div>
 		</div>
 	</div>

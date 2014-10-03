@@ -3,10 +3,10 @@
  * Part of the Fuel framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -190,7 +190,14 @@ class Inflector
 	 */
 	public static function camelize($underscored_word)
 	{
-		return preg_replace('/(^|_)(.)/e', "strtoupper('\\2')", strval($underscored_word));
+		return preg_replace_callback(
+			'/(^|_)(.)/',
+			function ($parm)
+			{
+				return strtoupper($parm[2]);
+			},
+			strval($underscored_word)
+		);
 	}
 
 	/**
@@ -233,21 +240,21 @@ class Inflector
 	 * Only works with UTF8 input and and only outputs 7 bit ASCII characters.
 	 *
 	 * @param   string  $str              the text
-	 * @param   string  $sep              the separator (either - or _)
+	 * @param   string  $sep              the separator
 	 * @param   bool    $lowercase        wether to convert to lowercase
 	 * @param   bool    $allow_non_ascii  wether to allow non ascii
 	 * @return  string                    the new title
 	 */
 	public static function friendly_title($str, $sep = '-', $lowercase = false, $allow_non_ascii = false)
 	{
-		// Allow underscore, otherwise default to dash
-		$sep = $sep === '_' ? '_' : '-';
-
 		// Remove tags
 		$str = \Security::strip_tags($str);
 
 		// Decode all entities to their simpler forms
 		$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
+
+		// Replace apostrophes.
+		$str = preg_replace("#[\’]#", '-', $str);
 
 		// Remove all quotes.
 		$str = preg_replace("#[\"\']#", '', $str);

@@ -3,10 +3,10 @@
  * Part of the Fuel framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -70,11 +70,11 @@ class Router
 
 		if ($prepend)
 		{
-			\Arr::prepend(static::$routes, $name, new \Route($path, $options, $case_sensitive));
+			\Arr::prepend(static::$routes, $name, new \Route($path, $options, $case_sensitive, $name));
 			return;
 		}
 
-		static::$routes[$name] = new \Route($path, $options, $case_sensitive);
+		static::$routes[$name] = new \Route($path, $options, $case_sensitive, $name);
 	}
 
 	/**
@@ -109,28 +109,27 @@ class Router
 				}
 			}
 
-			// deal with the remaining regex's
-			if (preg_match_all('#\(.*?\)#', $url, $matches) !== false)
+			// deal with regex's groups
+			if (preg_match_all('#\((?:\?P<(\w+?)>)?.*?\)#', $url, $matches) !== false)
 			{
-				if (count($matches) == 1)
+				if (count($matches) == 2)
 				{
-					$search = array();
-					foreach($matches[0] as $match)
+					$indexed_group_count = 0;
+					foreach($matches[0] as $index => $target)
 					{
-						$search[] = $match;
-					}
-
-					$replace = array();
-					foreach($search as $key => $regex)
-					{
-						$replace = array_key_exists($key, $named_params) ? $named_params[$key] : '';
-
-						if (($pos = strpos($url,$regex)) !== false)
+						$replace = '';
+						if (array_key_exists($key = $matches[1][$index], $named_params) ||
+						    array_key_exists($key = '$'.($index + 1), $named_params) ||
+						    array_key_exists($key = $indexed_group_count++, $named_params))
 						{
-							$url = substr_replace($url,$replace,$pos,strlen($regex));
+							$replace = $named_params[$key];
+						}
+
+						if (($pos = strpos($url, $target)) !== false)
+						{
+							$url = substr_replace($url, $replace, $pos, strlen($target));
 						}
 					}
-
 				}
 			}
 
@@ -257,26 +256,38 @@ class Router
 	protected static function parse_segments($segments, $namespace = '', $module = false)
 	{
 		$temp_segments = $segments;
+		$prefix = static::get_prefix();
 
 		foreach (array_reverse($segments, true) as $key => $segment)
 		{
-			$class = $namespace.static::$prefix.\Inflector::words_to_upper(implode('_', $temp_segments));
+			// determine which classes to check. First, all underscores, or all namespaced
+			$classes = array(
+				$namespace.$prefix.\Inflector::words_to_upper(implode(substr($prefix,-1,1), $temp_segments), substr($prefix,-1,1)),
+			);
+
+			// if we're namespacing, check a hybrid version too
+			$classes[] = $namespace.$prefix.\Inflector::words_to_upper(implode('_', $temp_segments));
+
 			array_pop($temp_segments);
-			if (class_exists($class))
+
+			foreach ($classes as $class)
 			{
-				return array(
-					'controller'    => $class,
-					'action'        => isset($segments[$key + 1]) ? $segments[$key + 1] : null,
-					'method_params' => array_slice($segments, $key + 2),
-				);
+				if (static::check_class($class))
+				{
+					return array(
+						'controller'    => $class,
+						'action'        => isset($segments[$key + 1]) ? $segments[$key + 1] : null,
+						'method_params' => array_slice($segments, $key + 2),
+					);
+				}
 			}
 		}
 
 		// Fall back for default module controllers
 		if ($module)
 		{
-			$class = $namespace.static::$prefix.ucfirst($module);
-			if (class_exists($class))
+			$class = $namespace.$prefix.ucfirst($module);
+			if (static::check_class($class))
 			{
 				return array(
 					'controller'    => $class,
@@ -286,6 +297,27 @@ class Router
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Checks whether class exists.
+	 *
+	 * @param string $class The class name to check.
+	 * @return bool True if $class exists, false otherwise.
+	 */
+	protected static function check_class($class)
+	{
+		return class_exists($class);
+	}
+
+	/**
+	 * Get prefix.
+	 *
+	 * @return string Prefix as defined in config controller_prefix.
+	 */
+	protected static function get_prefix()
+	{
+		return static::$prefix;
 	}
 }
 

@@ -51,6 +51,8 @@ class Controller_Server extends \ComponentController
 		$parts = explode('/',$_SERVER['REQUEST_URI']);
 		$type = explode('.',$parts[count($parts)-1]);
 		$type = $type[count($type)-1];
+		$type = explode('?',$type);
+		$type = $type[0];
 
 		$parts2 = $parts;
 		array_pop($parts2);
@@ -247,6 +249,13 @@ class Controller_Server extends \ComponentController
 		}
 		else if(static::$is_tooltip)
 		{
+			$filepath = $this->param('path');
+			if(preg_match('#\?[\w]+#', $filepath))
+			{
+				$filepath = explode('?',$filepath);
+				$filepath = $filepath[0];
+			}
+
 			$path = APPPATH . '../../components/' . $component . '/tooltip/' . str_replace('-', '/', $this->param('path')) . '.xml';
 
 			if(!file_exists($path))
@@ -267,6 +276,12 @@ class Controller_Server extends \ComponentController
 			$type = $file_data['extension'];
 
 		$this->response->set_header('Content-Type', $this->_get_mimetype('test.' . $type));
+
+		if(preg_match('#\?[\w]+#', $path))
+		{
+			$path = explode('?',$path);
+			$path = $path[0];
+		}
 
 		if($type == 'js' && $file_data['extension'] != 'coffee' || in_array($type,array('png','jpg','gif')))
 		{

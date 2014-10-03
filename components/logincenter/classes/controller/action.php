@@ -91,6 +91,6 @@ class Controller_Action extends \Controller
 		$account->session = 'logout_' . sha1(($account->session));
 		$account->save();
 
-		return \Response::redirect('logincenter');
+		return \Response::redirect('logincenter?msg_id=3');
 	}
 }

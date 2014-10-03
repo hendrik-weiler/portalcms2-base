@@ -1,12 +1,14 @@
 <?php
 /**
+ * Fuel
+ *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -23,6 +25,8 @@ Autoloader::add_classes(array(
 	'Email\\Email_Driver_Smtp'				=> __DIR__.'/classes/email/driver/smtp.php',
 	'Email\\Email_Driver_Sendmail'			=> __DIR__.'/classes/email/driver/sendmail.php',
 	'Email\\Email_Driver_Noop'				=> __DIR__.'/classes/email/driver/noop.php',
+	'Email\\Email_Driver_Mailgun'			=> __DIR__.'/classes/email/driver/mailgun.php',
+	'Email\\Email_Driver_Mandrill'			=> __DIR__.'/classes/email/driver/mandrill.php',
 
 	/**
 	 * Email exceptions.

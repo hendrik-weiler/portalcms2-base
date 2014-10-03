@@ -13,6 +13,11 @@ return array(
 		'entry_value' => 'Value',
 		'install_component' => 'Install',
 		'uninstall_component' => 'Uninstall',
+		'version' => 'Version',
+		'frontend_display' => 'Frontend Modul',
+		'author' => 'Author',
+		'category' => 'Category',
+		'id' => 'Unique Identification'
 	),
 
 	'th' => array(

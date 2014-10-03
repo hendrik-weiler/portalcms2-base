@@ -41,11 +41,6 @@ class Database_MySQLi_Connection extends \Database_Connection
 	protected $_identifier = '`';
 
 	/**
-	 * @var  bool  Allows transactions
-	 */
-	protected $_in_transaction = false;
-
-	/**
 	 * @var  string  Which kind of DB is used
 	 */
 	public $_db_type = 'mysql';
@@ -75,9 +70,6 @@ class Database_MySQLi_Connection extends \Database_Connection
 			'persistent' => false,
 			'compress'	 => true,
 		));
-
-		// Prevent this information from showing up in traces
-		unset($this->_config['connection']['username'], $this->_config['connection']['password']);
 
 		try
 		{
@@ -127,7 +119,7 @@ class Database_MySQLi_Connection extends \Database_Connection
 			if ($this->_connection->error)
 			{
 				// Unable to connect, select database, etc
-				throw new \Database_Exception($this->_connection->error, $this->_connection->errno);
+				throw new \Database_Exception(str_replace($password, str_repeat('*', 10), $this->_connection->error), $this->_connection->errno);
 			}
 		}
 		catch (\ErrorException $e)
@@ -135,7 +127,8 @@ class Database_MySQLi_Connection extends \Database_Connection
 			// No connection exists
 			$this->_connection = null;
 
-			throw new \Database_Exception('No MySQLi Connection', 0);
+			$error_code = is_numeric($e->getCode()) ? $e->getCode() : 0;
+			throw new \Database_Exception(str_replace($password, str_repeat('*', 10), $e->getMessage()), $error_code, $e);
 		}
 
 		// \xFF is a better delimiter, but the PHP driver uses underscore
@@ -221,8 +214,38 @@ class Database_MySQLi_Connection extends \Database_Connection
 
 		if ( ! empty($this->_config['profiling']))
 		{
-			// Benchmark this query for the current instance
-			$benchmark = \Profiler::start("Database ({$this->_instance})", $sql);
+			// Get the paths defined in config
+			$paths = \Config::get('profiling_paths');
+
+			// Storage for the trace information
+			$stacktrace = array();
+
+			// Get the execution trace of this query
+			$include = false;
+			foreach (debug_backtrace() as $index => $page)
+			{
+				// Skip first entry and entries without a filename
+				if ($index > 0 and empty($page['file']) === false)
+				{
+					// Checks to see what paths you want backtrace
+					foreach($paths as $index => $path)
+					{
+						if (strpos($page['file'], $path) !== false)
+						{
+							$include = true;
+							break;
+						}
+					}
+
+					// Only log if no paths we defined, or we have a path match
+					if ($include or empty($paths))
+					{
+						$stacktrace[] = array('file' => Fuel::clean_path($page['file']), 'line' => $page['line']);
+					}
+				}
+			}
+
+			$benchmark = \Profiler::start($this->_instance, $sql, $stacktrace);
 		}
 
 		if ( ! empty($this->_config['connection']['persistent']) and $this->_config['connection']['database'] !== static::$_current_databases[$this->_connection_id])
@@ -454,32 +477,57 @@ class Database_MySQLi_Connection extends \Database_Connection
 		return array($errno, empty($errno)? null : $errno, empty($errno) ? null : $this->_connection->error);
 	}
 
-	public function in_transaction()
+	protected function driver_start_transaction()
 	{
-		return $this->_in_transaction;
-	}
-
-	public function start_transaction()
-	{
-		$this->query(0, 'SET AUTOCOMMIT=0', false);
 		$this->query(0, 'START TRANSACTION', false);
-		$this->_in_transaction = true;
 		return true;
 	}
 
-	public function commit_transaction()
+	protected function driver_commit()
 	{
 		$this->query(0, 'COMMIT', false);
-		$this->query(0, 'SET AUTOCOMMIT=1', false);
-		$this->_in_transaction = false;
 		return true;
 	}
 
-	public function rollback_transaction()
+	protected function driver_rollback()
 	{
 		$this->query(0, 'ROLLBACK', false);
-		$this->query(0, 'SET AUTOCOMMIT=1', false);
-		$this->_in_transaction = false;
+		return true;
+	}
+
+	/**
+	 * Sets savepoint of the transaction
+	 *
+	 * @param string $name name of the savepoint
+	 * @return boolean true  - savepoint was set successfully;
+	 *                 false - failed to set savepoint;
+	 */
+	protected function set_savepoint($name) {
+		$this->query(0, 'SAVEPOINT LEVEL'.$name, false);
+		return true;
+	}
+
+	/**
+	 * Release savepoint of the transaction
+	 *
+	 * @param string $name name of the savepoint
+	 * @return boolean true  - savepoint was set successfully;
+	 *                 false - failed to set savepoint;
+	 */
+	protected function release_savepoint($name) {
+		$this->query(0, 'RELEASE SAVEPOINT LEVEL'.$name, false);
+		return true;
+	}
+
+	/**
+	 * Rollback savepoint of the transaction
+	 *
+	 * @param string $name name of the savepoint
+	 * @return boolean true  - savepoint was set successfully;
+	 *                 false - failed to set savepoint;
+	 */
+	protected function rollback_savepoint($name) {
+		$this->query(0, 'ROLLBACK TO SAVEPOINT LEVEL'.$name, false);
 		return true;
 	}
 

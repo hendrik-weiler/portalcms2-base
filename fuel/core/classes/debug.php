@@ -3,10 +3,10 @@
  * Part of the Fuel framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -53,21 +53,30 @@ class Debug
 		{
 			$backtrace = debug_backtrace();
 
-			// If being called from within, show the file above in the backtrack
-			if (strpos($backtrace[0]['file'], 'core/classes/debug.php') !== FALSE)
+			// locate the first file entry that isn't this class itself
+			foreach ($backtrace as $stack => $trace)
 			{
-				$callee = $backtrace[1];
-				$label = \Inflector::humanize($backtrace[1]['function']);
-			}
-			else
-			{
-				$callee = $backtrace[0];
-				$label = 'Debug';
+				if (isset($trace['file']))
+				{
+					// If being called from within, show the file above in the backtrack
+					if (strpos($trace['file'], 'core/classes/debug.php') !== false)
+					{
+						$callee = $backtrace[$stack+1];
+						$label = \Inflector::humanize($backtrace[$stack+1]['function']);
+					}
+					else
+					{
+						$callee = $trace;
+						$label = 'Debug';
+					}
+
+					$callee['file'] = \Fuel::clean_path($callee['file']);
+
+					break;
+				}
 			}
 
 			$arguments = func_get_args();
-
-			$callee['file'] = \Fuel::clean_path($callee['file']);
 
 			if ( ! static::$js_displayed)
 			{
@@ -105,7 +114,7 @@ JS;
 		$backtrace = debug_backtrace();
 
 		// If being called from within, show the file above in the backtrack
-		if (strpos($backtrace[0]['file'], 'core/classes/debug.php') !== FALSE)
+		if (strpos($backtrace[0]['file'], 'core/classes/debug.php') !== false)
 		{
 			$callee = $backtrace[1];
 			$label = \Inflector::humanize($backtrace[1]['function']);
@@ -193,7 +202,7 @@ JS;
 		}
 		elseif (is_string($var))
 		{
-			$return .= "<i>{$scope}</i> <strong>{$name}</strong> (String): <span style=\"color:#E00000;\">\"".htmlentities($var)."\"</span> (".strlen($var)." characters)\n";
+			$return .= "<i>{$scope}</i> <strong>{$name}</strong> (String): <span style=\"color:#E00000;\">\"".\Security::htmlentities($var)."\"</span> (".strlen($var)." characters)\n";
 		}
 		elseif (is_float($var))
 		{
@@ -221,8 +230,24 @@ JS;
 			ob_start();
 			var_dump($var);
 			$contents = ob_get_contents();
-			strpos($contents, 'xdebug-var-dump') !== false ? preg_match('~(.*?)\)\[<i>(\d+)(.*)~', $contents, $matches) : preg_match('~object\((.*?)#(\d+)(.*)~', $contents, $matches);
 			ob_end_clean();
+
+			// process it based on the xdebug presence and configuration
+			if (extension_loaded('xdebug') and ini_get('xdebug.overload_var_dump') === '1')
+			{
+				if (ini_get('html_errors'))
+				{
+					preg_match('~(.*?)\)\[<i>(\d+)(.*)~', $contents, $matches);
+				}
+				else
+				{
+					preg_match('~class (.*?)#(\d+)(.*)~', $contents, $matches);
+				}
+			}
+			else
+			{
+				preg_match('~object\((.*?)#(\d+)(.*)~', $contents, $matches);
+			}
 
 			$id = 'fuel_debug_'.mt_rand();
 			$rvar = new \ReflectionObject($var);
@@ -329,9 +354,54 @@ JS;
 		return $debug_lines;
 	}
 
-	public static function backtrace()
+	/**
+	 * Output the call stack from here, or the supplied one.
+	 *
+	 * @param	array		(optional) A backtrace to output
+	 * @return  string		Formatted backtrace
+	 */
+	public static function backtrace($trace = null)
 	{
-		return static::dump(debug_backtrace());
+		$trace or $trace = debug_backtrace();
+
+		if (\Fuel::$is_cli) {
+			// Special case for CLI since the var_dump of a backtrace is of little use.
+			$str = '';
+			foreach ($trace as $i => $frame)
+			{
+				$line = "#$i\t";
+
+				if ( ! isset($frame['file']))
+				{
+					$line .= "[internal function]";
+				}
+				else
+				{
+					$line .= $frame['file'] . ":" . $frame['line'];
+				}
+
+				$line .= "\t";
+
+				if (isset($frame['function']))
+				{
+					if (isset($frame['class']))
+					{
+						$line .= $frame['class'] . '::';
+					}
+
+					$line .= $frame['function'] . "()";
+				}
+
+				$str .= $line . "\n";
+
+			}
+
+			return $str;
+		}
+		else
+		{
+			return static::dump($trace);
+		}
 	}
 
 	/**
@@ -408,33 +478,8 @@ JS;
 	 */
 	public static function headers()
 	{
-		// deal with fcgi installs on PHP 5.3
-		if (version_compare(PHP_VERSION, '5.4.0') < 0 and  ! function_exists('apache_request_headers'))
-		{
-			$headers = array();
-			foreach (\Input::server() as $name => $value)
-			{
-				if (strpos($name, 'HTTP_') === 0)
-				{
-					$name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
-					$headers[$name] = $value;
-				}
-				elseif ($name == 'CONTENT_TYPE')
-				{
-					$headers['Content-Type'] = $value;
-				}
-				elseif ($name == 'CONTENT_LENGTH')
-				{
-					$headers['Content-Length'] = $value;
-				}
-			}
-		}
-		else
-		{
-			$headers = getAllHeaders();
-		}
-
-		return static::dump($headers);
+		// get the current request headers and dump them
+		return static::dump(\Input::headers());
 	}
 
 	/**
@@ -477,7 +522,7 @@ JS;
 		}
 
 		// call the function to be benchmarked
-		$result = is_callable($callable) ? call_user_func_array($callable, $params) : null;
+		$result = is_callable($callable) ? call_fuel_func_array($callable, $params) : null;
 
 		// get the after-benchmark time
 		if (function_exists('getrusage'))
@@ -501,4 +546,3 @@ JS;
 	}
 
 }
-

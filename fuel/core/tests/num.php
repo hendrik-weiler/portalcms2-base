@@ -3,10 +3,10 @@
  * Part of the Fuel framework.
  *
  * @package    Fuel
- * @version    1.5
+ * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -51,7 +51,7 @@ class Test_Num extends TestCase
 	public function test_format_bytes()
 	{
 		$output = Num::format_bytes('204800');
-		$expected = '200 kB';
+		$expected = '200 KB';
 
 		$this->assertEquals($expected, $output);
 
